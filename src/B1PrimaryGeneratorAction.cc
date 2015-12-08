@@ -21,11 +21,10 @@ B1PrimaryGeneratorAction::B1PrimaryGeneratorAction() : G4VUserPrimaryGeneratorAc
    // default particle kinematic
    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
    G4String particleName;
-   G4ParticleDefinition* particle
-      = particleTable->FindParticle(particleName="e-");
-   fParticleGun->SetParticleDefinition(particle);
-   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-   fParticleGun->SetParticleEnergy(8.0*MeV); // kinetic energy (not total)
+   G4ParticleDefinition* particle = particleTable->FindParticle(particleName="alpha");
+   fParticleGun->SetParticleDefinition( particle );
+   fParticleGun->SetParticleMomentumDirection( G4ThreeVector(0.,0.,1.) );
+   fParticleGun->SetParticleEnergy( 50.0*MeV ); // kinetic energy (not total)
 }
 //______________________________________________________________________________
 

@@ -28,7 +28,7 @@ B1DetectorConstruction::B1DetectorConstruction() :
    world_x                      ( 1.0*m                  ),
    world_y                      ( 1.0*m                  ),
    world_z                      ( 1.0*m                  ),
-   radiator_thickness           ( 6.0*mm                 ),
+   radiator_thickness           ( 5.0*cm                 ),
    collimator_target_center_gap ( 4.0*cm                 ),
    collimator_upstream_ID       ( 1.0*cm                 ),
    collimator_downstream_ID     ( 1.0*cm                 ),
@@ -148,6 +148,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
    double  density          = 0.0;
    double  pressure         = 0.0;
    double  temperature      = 0.0;
+   double  a                = 0.0;
 
 
    // ------------------------------------------------------------------------
@@ -205,11 +206,55 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
    if(radiator_log) delete radiator_log;
    if(radiator_solid) delete radiator_solid;
 
-   radiator_mat   = nist->FindOrBuildMaterial("G4_Cu");
+   //radiator_mat   = nist->FindOrBuildMaterial("G4_Cu");
+   // define Elements
+   a = 1.01*g/mole;
+   G4Element* elH  = new G4Element("Hydrogen", "H",  1.0, a);
+   a = 12.01*g/mole;
+   density   = 1.032*g/cm3;
+   G4Element* elC  = new G4Element("Carbon"  , "C",  6.0, a);
+   radiator_mat = new G4Material("Scintillator", density, 2);
+   radiator_mat->AddElement(elC, 9);
+   radiator_mat->AddElement(elH, 10);
+
+   const G4int NUMENTRIES = 9;
+   G4double Scnt_PP[NUMENTRIES] = { 1.6*eV, 6.7*eV, 6.8*eV, 6.9*eV,
+      7.0*eV, 7.1*eV, 7.2*eV, 7.3*eV, 7.4*eV };
+
+   G4double Scnt_FAST[NUMENTRIES] = { 0.000134, 0.004432, 0.053991, 0.241971, 
+      0.398942, 0.000134, 0.004432, 0.053991,
+      0.241971 };
+   G4double Scnt_SLOW[NUMENTRIES] = { 0.000010, 0.000020, 0.000030, 0.004000,
+      0.008000, 0.005000, 0.020000, 0.001000,
+      0.000010 };
+   G4double rindex[NUMENTRIES]     = { 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58 };
+
+   G4MaterialPropertiesTable* Scnt_MPT = new G4MaterialPropertiesTable();
+
+   //Scnt_MPT->AddProperty("FASTCOMPONENT", Scnt_PP, Scnt_FAST, NUMENTRIES);
+   //Scnt_MPT->AddProperty("SLOWCOMPONENT", Scnt_PP, Scnt_SLOW, NUMENTRIES);
+   Scnt_MPT->AddProperty(     "RINDEX"  , Scnt_PP, rindex,    NUMENTRIES);
+   Scnt_MPT->AddConstProperty("SCINTILLATIONYIELD", 500./MeV);
+   Scnt_MPT->AddConstProperty("RESOLUTIONSCALE", 2.0);
+   //Scnt_MPT->AddConstProperty("FASTTIMECONSTANT",  1.*ns);
+   //Scnt_MPT->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
+   //Scnt_MPT->AddConstProperty("YIELDRATIO", 0.8);
+
+   //Scnt->SetMaterialPropertiesTable(Scnt_MPT);
+   //const G4int NUMENTRIES = 2; //32;
+   //G4double ppckov[NUMENTRIES]     = { 1.9074494*eV  , 6.5254848*eV  };
+   //G4double rindex[NUMENTRIES]     = { 1.58          , 1.58          };
+   //G4double absorption[NUMENTRIES] = { 1000.0000000*m, 802.8323273*m };
+   //G4MaterialPropertiesTable *scint_MPT = new G4MaterialPropertiesTable();
+   //scint_MPT->AddConstProperty("SCINTILLATIONYIELD", 1000./MeV);
+   //scint_MPT->AddProperty(     "RINDEX"            , ppckov,  rindex,     NUMENTRIES);
+   //scint_MPT->AddProperty(     "ABSLENGTH"         , ppckov,  absorption, NUMENTRIES);
+
+   radiator_mat->SetMaterialPropertiesTable(Scnt_MPT);
+
    radiator_solid = new G4Tubs("radiator_solid", 0.0, radiator_diameter/2.0, radiator_thickness/2.0, 0.0, 360.*deg );
    radiator_log   = new G4LogicalVolume(radiator_solid, radiator_mat,"radiator_log");
    radiator_phys  = new G4PVPlacement(0,radiator_pos, radiator_log, "radiator_phys",world_log,false,0,checkOverlaps);                                  
-
    G4Colour            radiator_color {red, green, blue, alpha };   // Gray 
    G4VisAttributes   * radiator_vis   = new G4VisAttributes(radiator_color);
    radiator_log->SetVisAttributes(radiator_vis);
@@ -250,7 +295,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
          (collimator_downstream_ID)/2.0, collimator_OD/2.0, 
          collimator_length/4.0, 0.0, 360.*deg );
    collimator_log   = new G4LogicalVolume(collimator_solid, collimator_mat,"collimator_log");
-   collimator_phys  = new G4PVPlacement(0,collimator_pos, collimator_log, "collimator_phys",world_log,false,0,checkOverlaps);                                  
+   //collimator_phys  = new G4PVPlacement(0,collimator_pos, collimator_log, "collimator_phys",world_log,false,0,checkOverlaps);                                  
 
    G4Colour            collimator_color {red, green, blue, alpha };   // Gray 
    G4VisAttributes   * collimator_vis   = new G4VisAttributes(collimator_color);
@@ -274,7 +319,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
          collimator_length/4.0, 0.0, 360.*deg );
    //collimator2_solid = new G4Cons("collimator2_solid", collimator_ID/2.0, collimator_OD/2.0, collimator_ID/2.0, collimator_OD/2.0, collimator_length/4.0, 0.0, 360.*deg );
    collimator2_log   = new G4LogicalVolume(collimator2_solid, collimator2_mat,"collimator2_log");
-   collimator2_phys  = new G4PVPlacement(0,collimator2_pos, collimator2_log, "collimator2_phys",world_log,false,0,checkOverlaps);                                  
+   //collimator2_phys  = new G4PVPlacement(0,collimator2_pos, collimator2_log, "collimator2_phys",world_log,false,0,checkOverlaps);                                  
 
    G4Colour            collimator2_color {red, green, blue, alpha };   // Gray 
    G4VisAttributes   * collimator2_vis   = new G4VisAttributes(collimator2_color);
@@ -296,7 +341,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
    outer_collimator_mat   = nist->FindOrBuildMaterial("G4_Cu");
    outer_collimator_solid = new G4Tubs("outer_collimator_solid", outer_collimator_ID/2.0, outer_collimator_OD/2.0, collimator_length/2.0, 0.0, 360.*deg );
    outer_collimator_log   = new G4LogicalVolume(outer_collimator_solid, outer_collimator_mat,"outer_collimator_log");
-   outer_collimator_phys  = new G4PVPlacement(0,outer_collimator_pos, outer_collimator_log, "outer_collimator_phys",world_log,false,0,checkOverlaps);                                  
+   //outer_collimator_phys  = new G4PVPlacement(0,outer_collimator_pos, outer_collimator_log, "outer_collimator_phys",world_log,false,0,checkOverlaps);                                  
    G4Colour            outer_collimator_color {red, green, blue, alpha };   // Gray 
    G4VisAttributes   * outer_collimator_vis   = new G4VisAttributes(outer_collimator_color);
    outer_collimator_vis->SetForceWireframe(true);
@@ -318,7 +363,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
    scoring_mat   = nist->FindOrBuildMaterial("G4_AIR");
    scoring_solid = new G4Tubs("scoring_solid", 0.0, scoring_diameter/2.0, scoring_length/2.0, 0.0, 360.*deg );
    scoring_log   = new G4LogicalVolume(scoring_solid, scoring_mat,"scoring_log");
-   scoring_phys  = new G4PVPlacement(0,scoring_pos, scoring_log, "scoring_phys",world_log,false,0,checkOverlaps);                                  
+   //scoring_phys  = new G4PVPlacement(0,scoring_pos, scoring_log, "scoring_phys",world_log,false,0,checkOverlaps);                                  
 
    G4Colour            scoring_color {red, green, blue, alpha };   // Gray 
    G4VisAttributes   * scoring_vis   = new G4VisAttributes(scoring_color);
@@ -350,7 +395,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
          0.0, window_diameter/2.0,
          window_thickness/2.0, 0.0, 360.*deg );
    window_log   = new G4LogicalVolume(window_solid, window_mat,"window_log");
-   window_phys  = new G4PVPlacement(0,window_pos, window_log, "window_phys",world_log,false,0,checkOverlaps);                                  
+   //window_phys  = new G4PVPlacement(0,window_pos, window_log, "window_phys",world_log,false,0,checkOverlaps);                                  
 
    G4Colour            window_color {red, green, blue, alpha };   // Gray 
    G4VisAttributes   * window_vis   = new G4VisAttributes(window_color);
@@ -372,7 +417,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
    scoring2_mat   = nist->FindOrBuildMaterial("G4_AIR");
    scoring2_solid  = new G4Tubs("scoring2_solid", 0.0, scoring2_diameter/2.0, scoring2_length/2.0, 0.0, 360.*deg );
    scoring2_log   = new G4LogicalVolume(scoring2_solid, scoring2_mat,"scoring2_log");
-   scoring2_phys  = new G4PVPlacement(0,scoring2_pos, scoring2_log, "scoring2_phys",world_log,false,0,checkOverlaps);                                  
+   //scoring2_phys  = new G4PVPlacement(0,scoring2_pos, scoring2_log, "scoring2_phys",world_log,false,0,checkOverlaps);                                  
 
    G4Colour            scoring2_color {red, green, blue, alpha };   // Gray 
    G4VisAttributes   * scoring2_vis   = new G4VisAttributes(scoring2_color);

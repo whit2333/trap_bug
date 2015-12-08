@@ -17,7 +17,7 @@ B1ParallelWorldConstruction ::B1ParallelWorldConstruction(G4String& parallelWorl
    G4VUserParallelWorld(parallelWorldName),
    fConstructed(false),
    fNeedsRebuilt(true),
-   fSpanDistance(40.0*cm),
+   fSpanDistance(5.0*cm),
    fDirection(0,0,1.0),
    fStartingPoint(0,0,0),
    fDet_size(50.0*cm)
@@ -75,7 +75,7 @@ void B1ParallelWorldConstruction::Construct()
    // --------------------------------------------------------------
    // 
 
-   double        scoring_length = 1.0*um;
+   double        scoring_length = 0.1*um;
    double        step_size   = fSpanDistance/double(fNplanes-1);
    G4ThreeVector scoring_pos = fStartingPoint;
    G4ThreeVector step        = fDirection;

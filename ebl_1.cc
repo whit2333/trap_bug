@@ -3,6 +3,8 @@
 #include "B1ActionInitialization.hh"
 #include "G4SystemOfUnits.hh"
 #include "getopt.h"
+#include "B1OpticalPhysics.hh"
+#include "G4OpticalPhysics.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -192,6 +194,18 @@ int main(int argc,char** argv)
    G4PhysListFactory     factory;
    //QGSP_BIC_EMY QGSP_BERT_HP_PEN
    G4VModularPhysicsList * physicsList =  factory.GetReferencePhysList("QGSP_BIC_LIV");
+
+   G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
+   physicsList->RegisterPhysics( opticalPhysics );
+   opticalPhysics->SetWLSTimeProfile("delta");
+   opticalPhysics->SetScintillationYieldFactor(1.0);
+   opticalPhysics->SetScintillationExcitationRatio(0.0);
+   opticalPhysics->SetMaxNumPhotonsPerStep(100);
+   opticalPhysics->SetMaxBetaChangePerStep(10.0);
+   opticalPhysics->SetTrackSecondariesFirst(kCerenkov,true);
+   opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
+
+   //physicsList->RegisterPhysics(new B1OpticalPhysics());
 
    // This is needed to make use of the G4UserLimits applied to logical volumes.
    physicsList->RegisterPhysics(new G4StepLimiterPhysics());
