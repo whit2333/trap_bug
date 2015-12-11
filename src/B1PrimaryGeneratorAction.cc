@@ -25,6 +25,9 @@ B1PrimaryGeneratorAction::B1PrimaryGeneratorAction() : G4VUserPrimaryGeneratorAc
    fParticleGun->SetParticleDefinition( particle );
    fParticleGun->SetParticleMomentumDirection( G4ThreeVector(0.,0.,1.) );
    fParticleGun->SetParticleEnergy( 50.0*MeV ); // kinetic energy (not total)
+
+   fParticleMass = particle->GetPDGMass()/MeV;
+   std::cout << " Mass is " << fParticleMass << std::endl;
 }
 //______________________________________________________________________________
 
@@ -45,6 +48,14 @@ void B1PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
    G4double envSizeXY = 2.0*mm;
    G4double envSizeZ  = 0.0*nm;
+
+   G4double P_rand = 10.0 + 1000.0*(G4UniformRand());
+
+   G4double M  = fParticleMass;
+   G4double KE = sqrt(P_rand*P_rand + M*M) - M;
+   std::cout << " KE = " << KE << std::endl;
+
+   fParticleGun->SetParticleEnergy( KE*MeV ); // kinetic energy (not total)
 
    //if (!fEnvelopeBox)
    //{

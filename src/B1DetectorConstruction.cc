@@ -231,14 +231,14 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 
    G4MaterialPropertiesTable* Scnt_MPT = new G4MaterialPropertiesTable();
 
-   //Scnt_MPT->AddProperty("FASTCOMPONENT", Scnt_PP, Scnt_FAST, NUMENTRIES);
-   //Scnt_MPT->AddProperty("SLOWCOMPONENT", Scnt_PP, Scnt_SLOW, NUMENTRIES);
+   Scnt_MPT->AddProperty("FASTCOMPONENT", Scnt_PP, Scnt_FAST, NUMENTRIES);
+   Scnt_MPT->AddProperty("SLOWCOMPONENT", Scnt_PP, Scnt_SLOW, NUMENTRIES);
    Scnt_MPT->AddProperty(     "RINDEX"  , Scnt_PP, rindex,    NUMENTRIES);
-   Scnt_MPT->AddConstProperty("SCINTILLATIONYIELD", 500./MeV);
+   Scnt_MPT->AddConstProperty("SCINTILLATIONYIELD", 1./MeV);
    Scnt_MPT->AddConstProperty("RESOLUTIONSCALE", 2.0);
-   //Scnt_MPT->AddConstProperty("FASTTIMECONSTANT",  1.*ns);
-   //Scnt_MPT->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
-   //Scnt_MPT->AddConstProperty("YIELDRATIO", 0.8);
+   Scnt_MPT->AddConstProperty("FASTTIMECONSTANT",  1.*ns);
+   Scnt_MPT->AddConstProperty("SLOWTIMECONSTANT", 10.*ns);
+   Scnt_MPT->AddConstProperty("YIELDRATIO", 0.8);
 
    //Scnt->SetMaterialPropertiesTable(Scnt_MPT);
    //const G4int NUMENTRIES = 2; //32;

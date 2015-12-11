@@ -195,23 +195,23 @@ int main(int argc,char** argv)
    //QGSP_BIC_EMY QGSP_BERT_HP_PEN
    G4VModularPhysicsList * physicsList =  factory.GetReferencePhysList("QGSP_BIC_LIV");
 
-   G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
-   physicsList->RegisterPhysics( opticalPhysics );
-   opticalPhysics->SetWLSTimeProfile("delta");
-   opticalPhysics->SetScintillationYieldFactor(1.0);
-   opticalPhysics->SetScintillationExcitationRatio(0.0);
-   opticalPhysics->SetMaxNumPhotonsPerStep(100);
-   opticalPhysics->SetMaxBetaChangePerStep(10.0);
-   opticalPhysics->SetTrackSecondariesFirst(kCerenkov,true);
-   opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
+   //G4OpticalPhysics* opticalPhysics = new G4OpticalPhysics();
+   //physicsList->RegisterPhysics( opticalPhysics );
+   //opticalPhysics->SetWLSTimeProfile("delta");
+   //opticalPhysics->SetScintillationYieldFactor(1.0);
+   //opticalPhysics->SetScintillationExcitationRatio(0.0);
+   //opticalPhysics->SetMaxNumPhotonsPerStep(100);
+   //opticalPhysics->SetMaxBetaChangePerStep(10.0);
+   //opticalPhysics->SetTrackSecondariesFirst(kCerenkov,true);
+   //opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
 
-   //physicsList->RegisterPhysics(new B1OpticalPhysics());
+   physicsList->RegisterPhysics(new B1OpticalPhysics());
 
    // This is needed to make use of the G4UserLimits applied to logical volumes.
    physicsList->RegisterPhysics(new G4StepLimiterPhysics());
 
    // This connects the phyics to the parallel world (and sensitive detectors)
-   physicsList->RegisterPhysics(new G4ParallelWorldPhysics(paraWorldName,/*layered_mass=*/true));
+   //physicsList->RegisterPhysics(new G4ParallelWorldPhysics(paraWorldName,/*layered_mass=*/true));
    //physicsList->ReplacePhysics(new G4IonQMDPhysics());
    //physicsList->SetDefaultCutValue(0.005*um);
 
