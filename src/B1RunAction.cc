@@ -18,17 +18,6 @@ using ss = std::stringstream;
 B1RunAction::B1RunAction(G4int rn) : G4UserRunAction(),
    fRunNumber(rn)
 { 
-   //fOutputFile               = 0;
-   // add new units for dose
-   const G4double milligray = 1.e-3*gray;
-   const G4double microgray = 1.e-6*gray;
-   const G4double nanogray  = 1.e-9*gray;  
-   const G4double picogray  = 1.e-12*gray;
-
-   new G4UnitDefinition("milligray", "milliGy" , "Dose", milligray);
-   new G4UnitDefinition("microgray", "microGy" , "Dose", microgray);
-   new G4UnitDefinition("nanogray" , "nanoGy"  , "Dose", nanogray);
-   new G4UnitDefinition("picogray" , "picoGy"  , "Dose", picogray);        
 
    // Create analysis manager
    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
@@ -81,20 +70,6 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
 
    const B1Run* b1Run = static_cast<const B1Run*>(run);
 
-   // Compute dose
-   //
-   G4double edep  = b1Run->GetEdep();
-   G4double edep2 = b1Run->GetEdep2();
-   G4double rms = edep2 - edep*edep/nofEvents;
-   if (rms > 0.) rms = std::sqrt(rms); else rms = 0.;
-
-   const B1DetectorConstruction* detectorConstruction
-      = static_cast<const B1DetectorConstruction*>
-      (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-   G4double mass = detectorConstruction->GetScoringVolume()->GetMass();
-   G4double dose = edep/mass;
-   G4double rmsDose = rms/mass;
-
    // Run conditions
    //  note: There is no primary generator action object for "master"
    //        run manager for multi-threaded mode.
@@ -130,16 +105,16 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
          << "--------------------End of Local Run------------------------";
    }
 
-   G4cout
-      << G4endl
-      << " The run consists of " << nofEvents << " "<< runCondition
-      << G4endl
-      << " Dose in scoring volume : " 
-      << G4BestUnit(dose,"Dose") << " +- " << G4BestUnit(rmsDose,"Dose")
-      << G4endl
-      << "------------------------------------------------------------"
-      << G4endl
-      << G4endl;
+   //G4cout
+   //   << G4endl
+   //   << " The run consists of " << nofEvents << " "<< runCondition
+   //   << G4endl
+   //   << " Dose in scoring volume : " 
+   //   //<< G4BestUnit(dose,"Dose") << " +- " << G4BestUnit(rmsDose,"Dose")
+   //   << G4endl
+   //   << "------------------------------------------------------------"
+   //   << G4endl
+   //   << G4endl;
 
 
 }

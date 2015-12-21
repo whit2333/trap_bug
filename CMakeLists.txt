@@ -58,9 +58,6 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh ${PROJECT_BINARY_DIR}/EBLsi
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
-add_executable(exampleB1 exampleB1.cc ${sources} ${headers})
-target_link_libraries(exampleB1 ${Geant4_LIBRARIES} )
-
 add_executable(ebl1 ebl_1.cc ${sources} ${headers})
 target_link_libraries(ebl1 ${Geant4_LIBRARIES})
 
@@ -68,7 +65,7 @@ target_link_libraries(ebl1 ${Geant4_LIBRARIES})
 # For internal Geant4 use - but has no effect if you build this
 # example standalone
 #
-add_custom_target(EBLSIM DEPENDS exampleB1 ebl1)
+add_custom_target(EBLSIM DEPENDS ebl1)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
@@ -96,7 +93,6 @@ install(FILES ${EXAMPLEB1_SCRIPTS} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/${
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS exampleB1 DESTINATION bin)
 install(TARGETS ebl1 DESTINATION bin)
 
 # ----------------------------------------------------------------------------
@@ -114,7 +110,7 @@ endforeach()
 
 
 ## Add all targets to the build-tree export set
-export(TARGETS exampleB1 FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+export(TARGETS ebl1 FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 #
 ## Export the package for use from the build-tree
 ## (this registers the build-tree with a global CMake-registry)
